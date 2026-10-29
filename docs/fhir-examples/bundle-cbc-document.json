@@ -1,0 +1,409 @@
+{
+  "resourceType": "Bundle",
+  "id": "report-2",
+  "identifier": {
+    "system": "https://abdm-connect.example.org/fhir/sid/report-bundle",
+    "value": "report-2"
+  },
+  "type": "document",
+  "timestamp": "2026-10-29T07:00:30.412154Z",
+  "entry": [
+    {
+      "fullUrl": "http://localhost:8000/api/v1/fhir/Composition/2",
+      "resource": {
+        "resourceType": "Composition",
+        "id": "2",
+        "status": "final",
+        "type": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "11502-2",
+              "display": "Laboratory report"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/1"
+        },
+        "date": "2026-10-29T07:00:30.386965Z",
+        "author": [
+          {
+            "reference": "Organization/1"
+          }
+        ],
+        "title": "Complete Blood Count",
+        "section": [
+          {
+            "title": "Complete Blood Count",
+            "entry": [
+              {
+                "reference": "DiagnosticReport/2"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://localhost:8000/api/v1/fhir/Patient/1",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "1",
+        "identifier": [
+          {
+            "type": {
+              "text": "Facility-issued patient identifier (not an ABHA number)"
+            },
+            "system": "https://abdm-connect.example.org/fhir/sid/patient-id",
+            "value": "PAT-000001"
+          }
+        ],
+        "name": [
+          {
+            "text": "Asha Verma"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1990-05-14",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "9000000001",
+            "use": "mobile"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://localhost:8000/api/v1/fhir/Organization/1",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "1",
+        "identifier": [
+          {
+            "system": "https://abdm-connect.example.org/fhir/sid/facility-id",
+            "value": "FAC-LAB-001"
+          }
+        ],
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                "code": "prov",
+                "display": "Healthcare Provider"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "name": "Sunrise Diagnostics",
+        "address": [
+          {
+            "city": "Pune",
+            "country": "IN"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://localhost:8000/api/v1/fhir/Practitioner/2",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "2",
+        "identifier": [
+          {
+            "system": "https://abdm-connect.example.org/fhir/sid/staff-id",
+            "value": "lab1"
+          }
+        ],
+        "name": [
+          {
+            "text": "Dr. Meera Iyer"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://localhost:8000/api/v1/fhir/DiagnosticReport/2",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "id": "2",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+                "code": "LAB",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "text": "Complete Blood Count",
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "58410-2",
+              "display": "CBC panel - Blood by Automated count"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/1"
+        },
+        "effectiveDateTime": "2026-10-29T05:00:30.369873Z",
+        "issued": "2026-10-29T07:00:30.386965Z",
+        "performer": [
+          {
+            "reference": "Organization/1"
+          }
+        ],
+        "resultsInterpreter": [
+          {
+            "reference": "Practitioner/2"
+          }
+        ],
+        "result": [
+          {
+            "reference": "Observation/3"
+          },
+          {
+            "reference": "Observation/4"
+          },
+          {
+            "reference": "Observation/5"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://localhost:8000/api/v1/fhir/Observation/3",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "3",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "718-7",
+              "display": "Hemoglobin [Mass/volume] in Blood"
+            }
+          ],
+          "text": "Hemoglobin"
+        },
+        "subject": {
+          "reference": "Patient/1"
+        },
+        "effectiveDateTime": "2026-10-29T05:00:30.369873Z",
+        "issued": "2026-10-29T07:00:30.386965Z",
+        "performer": [
+          {
+            "reference": "Organization/1"
+          },
+          {
+            "reference": "Practitioner/2"
+          }
+        ],
+        "valueQuantity": {
+          "value": 13.2,
+          "unit": "g/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "g/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ],
+        "referenceRange": [
+          {
+            "low": {
+              "value": 12.0,
+              "unit": "g/dL",
+              "system": "http://unitsofmeasure.org",
+              "code": "g/dL"
+            },
+            "high": {
+              "value": 15.5,
+              "unit": "g/dL",
+              "system": "http://unitsofmeasure.org",
+              "code": "g/dL"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://localhost:8000/api/v1/fhir/Observation/4",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "4",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "6690-2",
+              "display": "Leukocytes [#/volume] in Blood by Automated count"
+            }
+          ],
+          "text": "WBC count"
+        },
+        "subject": {
+          "reference": "Patient/1"
+        },
+        "effectiveDateTime": "2026-10-29T05:00:30.369873Z",
+        "issued": "2026-10-29T07:00:30.386965Z",
+        "performer": [
+          {
+            "reference": "Organization/1"
+          },
+          {
+            "reference": "Practitioner/2"
+          }
+        ],
+        "valueQuantity": {
+          "value": 11.9,
+          "unit": "10*3/uL",
+          "system": "http://unitsofmeasure.org",
+          "code": "10*3/uL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "H",
+                "display": "High"
+              }
+            ]
+          }
+        ],
+        "referenceRange": [
+          {
+            "low": {
+              "value": 4.0,
+              "unit": "10*3/uL",
+              "system": "http://unitsofmeasure.org",
+              "code": "10*3/uL"
+            },
+            "high": {
+              "value": 11.0,
+              "unit": "10*3/uL",
+              "system": "http://unitsofmeasure.org",
+              "code": "10*3/uL"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://localhost:8000/api/v1/fhir/Observation/5",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "5",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "777-3",
+              "display": "Platelets [#/volume] in Blood by Automated count"
+            }
+          ],
+          "text": "Platelet count"
+        },
+        "subject": {
+          "reference": "Patient/1"
+        },
+        "effectiveDateTime": "2026-10-29T05:00:30.369873Z",
+        "issued": "2026-10-29T07:00:30.386965Z",
+        "performer": [
+          {
+            "reference": "Organization/1"
+          },
+          {
+            "reference": "Practitioner/2"
+          }
+        ],
+        "valueQuantity": {
+          "value": 260.0,
+          "unit": "10*3/uL",
+          "system": "http://unitsofmeasure.org",
+          "code": "10*3/uL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ],
+        "referenceRange": [
+          {
+            "low": {
+              "value": 150.0,
+              "unit": "10*3/uL",
+              "system": "http://unitsofmeasure.org",
+              "code": "10*3/uL"
+            },
+            "high": {
+              "value": 410.0,
+              "unit": "10*3/uL",
+              "system": "http://unitsofmeasure.org",
+              "code": "10*3/uL"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

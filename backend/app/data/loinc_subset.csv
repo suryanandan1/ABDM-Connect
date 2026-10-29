@@ -1,0 +1,45 @@
+code,display,kind,unit,abbreviations
+58410-2,CBC panel - Blood by Automated count,panel,,CBC;complete blood count;hemogram;FBC
+24331-1,Lipid panel - Serum or Plasma,panel,,lipid profile;LP
+24323-8,Comprehensive metabolic 2000 panel - Serum or Plasma,panel,,CMP;metabolic panel
+24325-3,Hepatic function 2000 panel - Serum or Plasma,panel,,LFT;liver function test
+24362-6,Renal function 2000 panel - Serum or Plasma,panel,,RFT;KFT;kidney function test
+6690-2,Leukocytes [#/volume] in Blood by Automated count,test,10*3/uL,WBC;TLC;white blood cell count;total leukocyte count
+789-8,Erythrocytes [#/volume] in Blood by Automated count,test,10*6/uL,RBC;red blood cell count
+718-7,Hemoglobin [Mass/volume] in Blood,test,g/dL,Hb;Hgb;haemoglobin
+4544-3,Hematocrit [Volume Fraction] of Blood by Automated count,test,%,HCT;PCV;packed cell volume
+787-2,MCV [Entitic volume] by Automated count,test,fL,MCV;mean corpuscular volume
+785-6,MCH [Entitic mass] by Automated count,test,pg,MCH;mean corpuscular hemoglobin
+786-4,MCHC [Mass/volume] by Automated count,test,g/dL,MCHC;mean corpuscular hemoglobin concentration
+788-0,Erythrocyte distribution width [Ratio] by Automated count,test,%,RDW;RDW-CV;red cell distribution width
+777-3,Platelets [#/volume] in Blood by Automated count,test,10*3/uL,PLT;platelet count
+32623-1,Platelet mean volume [Entitic volume] in Blood by Automated count,test,fL,MPV;mean platelet volume
+770-8,Neutrophils/100 leukocytes in Blood by Automated count,test,%,NEUT%;neutrophils
+736-9,Lymphocytes/100 leukocytes in Blood by Automated count,test,%,LYMPH%;lymphocytes
+5905-5,Monocytes/100 leukocytes in Blood by Automated count,test,%,MONO%;monocytes
+713-8,Eosinophils/100 leukocytes in Blood by Automated count,test,%,EOS%;eosinophils
+706-2,Basophils/100 leukocytes in Blood by Automated count,test,%,BASO%;basophils
+4537-7,Erythrocyte sedimentation rate by Westergren method,test,mm/h,ESR;sed rate
+2345-7,Glucose [Mass/volume] in Serum or Plasma,test,mg/dL,glucose;blood sugar;RBS;random blood sugar
+1558-6,Fasting glucose [Mass/volume] in Serum or Plasma,test,mg/dL,FBS;FPG;fasting blood sugar
+1521-4,Glucose [Mass/volume] in Serum or Plasma --2 hours post meal,test,mg/dL,PPBS;post prandial blood sugar
+2339-0,Glucose [Mass/volume] in Blood,test,mg/dL,whole blood glucose
+4548-4,Hemoglobin A1c/Hemoglobin.total in Blood,test,%,HbA1c;A1c;glycated hemoglobin
+2093-3,Cholesterol [Mass/volume] in Serum or Plasma,test,mg/dL,TC;total cholesterol
+2571-8,Triglyceride [Mass/volume] in Serum or Plasma,test,mg/dL,TG;triglycerides
+2085-9,Cholesterol in HDL [Mass/volume] in Serum or Plasma,test,mg/dL,HDL;HDL-C
+13457-7,Cholesterol in LDL [Mass/volume] in Serum or Plasma by calculation,test,mg/dL,LDL;LDL-C;calculated LDL
+2160-0,Creatinine [Mass/volume] in Serum or Plasma,test,mg/dL,creat;serum creatinine
+3094-0,Urea nitrogen [Mass/volume] in Serum or Plasma,test,mg/dL,BUN;blood urea nitrogen
+3084-1,Urate [Mass/volume] in Serum or Plasma,test,mg/dL,uric acid;UA
+1742-6,Alanine aminotransferase [Enzymatic activity/volume] in Serum or Plasma,test,U/L,ALT;SGPT
+1920-8,Aspartate aminotransferase [Enzymatic activity/volume] in Serum or Plasma,test,U/L,AST;SGOT
+6768-6,Alkaline phosphatase [Enzymatic activity/volume] in Serum or Plasma,test,U/L,ALP;alk phos
+1975-2,Bilirubin.total [Mass/volume] in Serum or Plasma,test,mg/dL,TBIL;total bilirubin
+1751-7,Albumin [Mass/volume] in Serum or Plasma,test,g/dL,ALB;albumin
+2885-2,Protein [Mass/volume] in Serum or Plasma,test,g/dL,TP;total protein
+2951-2,Sodium [Moles/volume] in Serum or Plasma,test,mmol/L,Na;sodium
+2823-3,Potassium [Moles/volume] in Serum or Plasma,test,mmol/L,K;potassium
+2075-0,Chloride [Moles/volume] in Serum or Plasma,test,mmol/L,Cl;chloride
+17861-6,Calcium [Mass/volume] in Serum or Plasma,test,mg/dL,Ca;calcium
+3016-3,Thyrotropin [Units/volume] in Serum or Plasma,test,m[IU]/L,TSH;thyroid stimulating hormone

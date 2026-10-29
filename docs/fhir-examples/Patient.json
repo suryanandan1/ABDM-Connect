@@ -1,0 +1,27 @@
+{
+  "resourceType": "Patient",
+  "id": "1",
+  "identifier": [
+    {
+      "type": {
+        "text": "Facility-issued patient identifier (not an ABHA number)"
+      },
+      "system": "https://abdm-connect.example.org/fhir/sid/patient-id",
+      "value": "PAT-000001"
+    }
+  ],
+  "name": [
+    {
+      "text": "Asha Verma"
+    }
+  ],
+  "gender": "female",
+  "birthDate": "1990-05-14",
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "9000000001",
+      "use": "mobile"
+    }
+  ]
+}

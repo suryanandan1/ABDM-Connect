@@ -1,0 +1,12 @@
+loinc_subset.csv contains a small, hand-curated subset of LOINC codes and their Long Common Names
+(the "code" and "display" columns), plus an "abbreviations" column written for this project
+(abbreviations are NOT LOINC content).
+
+This material contains content from LOINC (http://loinc.org). LOINC is copyright Regenstrief
+Institute, Inc. and the Logical Observation Identifiers Names and Codes (LOINC) Committee and is
+available at no cost under the license at http://loinc.org/license. LOINC is a registered
+United States trademark of Regenstrief Institute, Inc.
+
+Before any clinical use, verify every code and display against the current official LOINC
+release, and re-read the LOINC licence terms for your use case. To use the full LOINC table,
+download it from loinc.org (free account) and load it in the same CSV format.
