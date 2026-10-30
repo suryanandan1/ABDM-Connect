@@ -21,8 +21,44 @@ Consent-based health data exchange between laboratories, hospitals and patients,
 
 ---
 
+## Screenshots
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/01-login.png" alt="Login page with sample accounts"><br><b>Login</b>: sample accounts fill the form</td>
+    <td width="50%"><img src="docs/screenshots/02-lab-dashboard.png" alt="Laboratory dashboard"><br><b>Lab dashboard</b></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/03-report-form.png" alt="Lab report form with LOINC-coded tests"><br><b>Report form</b>: LOINC-coded tests with units and reference ranges</td>
+    <td><img src="docs/screenshots/04-report-view.png" alt="Saved lab report"><br><b>Report view</b>: results flagged low / normal / high</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/05-fhir-viewer.png" alt="FHIR R4 JSON viewer"><br><b>FHIR R4 viewer</b>: the report as a FHIR document Bundle</td>
+    <td><img src="docs/screenshots/06-hospital-pending-denied.png" alt="Hospital denied while consent is pending"><br><b>Hospital request</b>: denied while consent is pending</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/07-patient-dashboard.png" alt="Patient dashboard"><br><b>Patient portal</b>: the patient's own reports</td>
+    <td><img src="docs/screenshots/08-consent-approved.png" alt="Consent approved in the consent center"><br><b>Consent center</b>: the patient approves the request</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/09-hospital-retrieved.png" alt="Hospital retrieves the consented report"><br><b>Record retrieved</b>: released only with active consent</td>
+    <td><img src="docs/screenshots/10-patient-history.png" alt="Patient access history"><br><b>Access history</b>: the patient sees who viewed their data</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/11-hospital-revoked-denied.png" alt="Access denied after consent is revoked"><br><b>Consent revoked</b>: access is denied again</td>
+    <td><img src="docs/screenshots/12-admin-dashboard.png" alt="Admin dashboard"><br><b>Admin dashboard</b></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/13-audit-log.png" alt="Audit log"><br><b>Audit log</b>: every action, including refusals</td>
+    <td><img src="docs/screenshots/14-admin-users.png" alt="Users and facilities administration"><br><b>Users &amp; facilities</b></td>
+  </tr>
+</table>
+
+---
+
 ## Contents
 
+- [Screenshots](#screenshots)
 - [How to make it a real ABDM system](#how-to-make-it-a-real-abdm-system)
 - [What is simulated and what is standard](#what-is-simulated-and-what-is-standard)
 - [Architecture](#architecture)
