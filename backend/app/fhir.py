@@ -49,6 +49,13 @@ def patient_resource(p):
         "gender": p.gender,
         "birthDate": p.birth_date.isoformat(),
     }
+    if p.abha_number:
+        # Verified through the local mock ABDM server only, so the system URI is ours, not ABDM's.
+        res["identifier"].append({
+            "type": {"text": "ABHA number (verified by mock ABDM server, not real ABDM)"},
+            "system": f"{ID_SYSTEM}/mock-abha-number",
+            "value": p.abha_number,
+        })
     if p.phone:
         res["telecom"] = [{"system": "phone", "value": p.phone, "use": "mobile"}]
     return res

@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import {
-  Alert, Avatar, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, InputAdornment, MenuItem, Stack,
-  Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Typography,
+  Alert, Avatar, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, InputAdornment, MenuItem, Paper, Stack,
+  Tab, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tabs, TextField, Typography,
 } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import PersonAddAlt1Outlined from '@mui/icons-material/PersonAddAlt1Outlined'
@@ -33,11 +33,195 @@ function age(birthDate) {
 }
 
 function RegisterDialog({ open, onClose }) {
+  const [tab, setTab] = useState('abha')
+  const [busy, setBusy] = useState(false)
+  const close = () => { if (!busy) onClose() }
+  return (
+    <Dialog open={open} onClose={close} fullWidth maxWidth="sm">
+      <DialogTitle sx={{ pb: 0 }}>Register patient</DialogTitle>
+      <Tabs value={tab} onChange={(_, v) => !busy && setTab(v)} sx={{ px: 3, borderBottom: 1, borderColor: 'divider' }}>
+        <Tab value="abha" label="With ABHA" />
+        <Tab value="manual" label="Without ABHA" />
+      </Tabs>
+      {/* Unmounted while closed, so each opening starts from a clean form. */}
+      {open && (tab === 'abha'
+        ? <AbhaRegister onClose={onClose} busy={busy} setBusy={setBusy} />
+        : <ManualRegister onClose={onClose} busy={busy} setBusy={setBusy} />)}
+    </Dialog>
+  )
+}
+
+const ABHA_NUMBER = /^\d{2}-?\d{4}-?\d{4}-?\d{4}$/
+const ABHA_ADDRESS = /^[a-zA-Z0-9_.]{3,}@[a-z]+$/
+
+// Three steps, mirroring the ABDM flow: ABHA → OTP the patient received → verified profile → save.
+// Today the backend talks to the local mock ABDM server (mock_abdm/, OTP printed in its terminal).
+function AbhaRegister({ onClose, busy, setBusy }) {
+  const navigate = useNavigate()
+  const [step, setStep] = useState('id')
+  const [abha, setAbha] = useState('')
+  const [otp, setOtp] = useState('')
+  const [txn, setTxn] = useState(null)
+  const [verified, setVerified] = useState(null)
+  const [login, setLogin] = useState({ username: '', password: '' })
+  const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState('')
+
+  const value = abha.trim()
+  const isAddress = value.includes('@')
+  const abhaError = submitted && step === 'id' && !(isAddress ? ABHA_ADDRESS.test(value.toLowerCase()) : ABHA_NUMBER.test(value))
+  const otpError = submitted && step === 'otp' && !/^\d{6}$/.test(otp)
+  const loginErrors = submitted && step === 'profile' ? {
+    username: !/^[a-zA-Z0-9_.-]{3,50}$/.test(login.username) && '3–50 characters: letters, numbers, . _ -',
+    password: login.password.length < 8 && 'At least 8 characters.',
+  } : {}
+
+  const run = async (valid, action) => {
+    setSubmitted(true)
+    if (!valid) return
+    setBusy(true)
+    setError('')
+    try {
+      await action()
+      setSubmitted(false)
+    } catch (err) {
+      setError(errorText(err))
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const sendOtp = (e) => {
+    e.preventDefault()
+    const ok = isAddress ? ABHA_ADDRESS.test(value.toLowerCase()) : ABHA_NUMBER.test(value)
+    run(ok, async () => {
+      const { data } = await api.post('/patients/abha/init', isAddress ? { abha_address: value } : { abha_number: value })
+      setTxn(data)
+      setOtp('')
+      setStep('otp')
+    })
+  }
+
+  const verifyOtp = (e) => {
+    e.preventDefault()
+    run(/^\d{6}$/.test(otp), async () => {
+      const { data } = await api.post('/patients/abha/verify', { txn_id: txn.txn_id, otp })
+      setVerified(data)
+      setStep('profile')
+    })
+  }
+
+  const register = (e) => {
+    e.preventDefault()
+    const ok = /^[a-zA-Z0-9_.-]{3,50}$/.test(login.username) && login.password.length >= 8
+    run(ok, async () => {
+      const { data } = await api.post('/patients/abha/register', { abha_token: verified.abha_token, ...login })
+      onClose()
+      navigate(`/patients/${data.id}`, { state: { created: data.patient_code } })
+    })
+  }
+
+  const link = () => run(true, async () => {
+    const { data } = await api.post(`/patients/${verified.possible_match.id}/abha`, { abha_token: verified.abha_token })
+    onClose()
+    navigate(`/patients/${data.id}`, { state: { linked: data.abha_number } })
+  })
+
+  const restart = () => { setStep('id'); setTxn(null); setVerified(null); setError(''); setSubmitted(false) }
+  const cancel = <Button onClick={onClose} disabled={busy} color="inherit">Cancel</Button>
+  const errorBox = error && <Alert severity="error" sx={{ whiteSpace: 'pre-line' }}>{error}</Alert>
+
+  if (step === 'id') return (
+    <form onSubmit={sendOtp} noValidate>
+      <DialogContent>
+        <Stack spacing={2.5}>
+          <Alert severity="info">
+            ABDM sends a one-time password to the mobile linked to the patient's ABHA. Connected to the <b>mock ABDM server</b>,
+            not real ABDM: the OTP appears in the mock server's terminal.
+          </Alert>
+          {errorBox}
+          <TextField label="ABHA number or ABHA address" required autoFocus value={abha} onChange={(e) => setAbha(e.target.value)}
+            error={abhaError} placeholder="91-1111-2222-3333 or name@sbx"
+            helperText={abhaError ? 'Enter a 14-digit ABHA number or an ABHA address like name@sbx.' : '14-digit ABHA number (hyphens optional) or ABHA address'} />
+        </Stack>
+      </DialogContent>
+      <DialogActions sx={{ px: 3, pb: 2 }}>
+        {cancel}
+        <Button type="submit" variant="contained" disabled={busy}>{busy ? 'Sending…' : 'Send OTP'}</Button>
+      </DialogActions>
+    </form>
+  )
+
+  if (step === 'otp') return (
+    <form onSubmit={verifyOtp} noValidate>
+      <DialogContent>
+        <Stack spacing={2.5}>
+          <Alert severity="success">{txn.message}. Ask the patient for the 6-digit code.</Alert>
+          {errorBox}
+          <TextField label="OTP" required autoFocus value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+            error={otpError} helperText={otpError ? 'Enter the 6-digit OTP.' : 'Valid for 5 minutes, 3 attempts'}
+            slotProps={{ htmlInput: { inputMode: 'numeric', maxLength: 6, autoComplete: 'one-time-code' } }} />
+        </Stack>
+      </DialogContent>
+      <DialogActions sx={{ px: 3, pb: 2 }}>
+        <Button onClick={restart} disabled={busy} color="inherit" sx={{ mr: 'auto' }}>Change ABHA / resend</Button>
+        {cancel}
+        <Button type="submit" variant="contained" disabled={busy}>{busy ? 'Verifying…' : 'Verify'}</Button>
+      </DialogActions>
+    </form>
+  )
+
+  const { profile, existing_patient: existing, possible_match: match } = verified
+  return (
+    <form onSubmit={register} noValidate>
+      <DialogContent>
+        <Stack spacing={2.5}>
+          {errorBox}
+          <Paper variant="outlined" sx={{ p: 2 }}>
+            <Typography variant="overline" color="text.secondary">Verified ABHA profile</Typography>
+            <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>{profile.full_name}</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ textTransform: 'capitalize' }}>
+              {profile.gender} · born {fmtDate(profile.birth_date)}{profile.phone && ` · ${profile.phone}`}
+            </Typography>
+            <Stack direction="row" sx={{ gap: 1, mt: 1, flexWrap: 'wrap' }}>
+              <Code>{profile.abha_number}</Code>{profile.abha_address && <Code>{profile.abha_address}</Code>}
+            </Stack>
+          </Paper>
+          {existing && <Alert severity="info">This ABHA is already registered as <b>{existing.patient_code}</b>.</Alert>}
+          {match && (
+            <Alert severity="warning">
+              <b>{match.patient_code}</b> has the same name and birth date but no ABHA yet. If this is the same person,
+              link the ABHA to that record instead of creating a duplicate.
+            </Alert>
+          )}
+          {!existing && !match && (
+            <>
+              <Typography variant="overline" color="text.secondary" sx={{ mb: -1.5 }}>Patient portal login</Typography>
+              <TextField label="Patient portal username" required autoComplete="off" value={login.username}
+                onChange={(e) => setLogin({ ...login, username: e.target.value })}
+                error={Boolean(loginErrors.username)} helperText={loginErrors.username || 'Letters, numbers, . _ -'} />
+              <TextField label="Temporary password" required type="password" autoComplete="new-password" value={login.password}
+                onChange={(e) => setLogin({ ...login, password: e.target.value })}
+                error={Boolean(loginErrors.password)} helperText={loginErrors.password || 'At least 8 characters. Give it to the patient.'} />
+            </>
+          )}
+        </Stack>
+      </DialogContent>
+      <DialogActions sx={{ px: 3, pb: 2 }}>
+        {cancel}
+        {existing && <Button variant="contained" onClick={() => { onClose(); navigate(`/patients/${existing.id}`) }}>Open patient record</Button>}
+        {match && <Button variant="contained" disabled={busy} onClick={link}>{busy ? 'Linking…' : `Link ABHA to ${match.patient_code}`}</Button>}
+        {!existing && !match && <Button type="submit" variant="contained" disabled={busy}>{busy ? 'Saving…' : 'Register'}</Button>}
+      </DialogActions>
+    </form>
+  )
+}
+
+function ManualRegister({ onClose, busy, setBusy }) {
   const navigate = useNavigate()
   const [form, setForm] = useState(EMPTY)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
-  const [busy, setBusy] = useState(false)
   const errors = submitted ? validate(form) : {}
   const field = (name, help = ' ') => ({
     value: form[name],
@@ -45,8 +229,6 @@ function RegisterDialog({ open, onClose }) {
     error: Boolean(errors[name]),
     helperText: errors[name] || help,
   })
-
-  const close = () => { if (!busy) { onClose(); setSubmitted(false); setError('') } }
 
   const submit = async (e) => {
     e.preventDefault()
@@ -68,35 +250,32 @@ function RegisterDialog({ open, onClose }) {
   }
 
   return (
-    <Dialog open={open} onClose={close} fullWidth maxWidth="sm">
-      <form onSubmit={submit} noValidate>
-        <DialogTitle>Register patient</DialogTitle>
-        <DialogContent>
-          <Stack spacing={2.5} sx={{ mt: 0.5 }}>
-            <Alert severity="info">A patient ID (PAT-…) is generated. This is not an ABHA number; ABHA linking comes with ABDM integration.</Alert>
-            {error && <Alert severity="error" sx={{ whiteSpace: 'pre-line' }}>{error}</Alert>}
-            <Typography variant="overline" color="text.secondary" sx={{ mb: -1.5 }}>Personal details</Typography>
-            <TextField label="Full name" required {...field('full_name')} />
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-              <TextField select label="Gender" sx={{ flex: 1 }} {...field('gender')}>
-                {['female', 'male', 'other', 'unknown'].map((g) => <MenuItem key={g} value={g} sx={{ textTransform: 'capitalize' }}>{g}</MenuItem>)}
-              </TextField>
-              <TextField label="Birth date" type="date" required sx={{ flex: 1 }}
-                slotProps={{ inputLabel: { shrink: true }, htmlInput: { max: today(), min: '1900-01-01' } }} {...field('birth_date')} />
-            </Stack>
-            <TextField label="Mobile (10 digits, optional)" slotProps={{ htmlInput: { inputMode: 'numeric', maxLength: 10 } }} {...field('phone')} />
-            <Typography variant="overline" color="text.secondary" sx={{ mb: -1.5 }}>Patient portal login</Typography>
-            <TextField label="Patient portal username" required autoComplete="off" {...field('username', 'Letters, numbers, . _ -')} />
-            <TextField label="Temporary password" required type="password" autoComplete="new-password"
-              {...field('password', 'At least 8 characters. Give it to the patient.')} />
+    <form onSubmit={submit} noValidate>
+      <DialogContent>
+        <Stack spacing={2.5}>
+          <Alert severity="info">For patients without an ABHA. A patient ID (PAT-…) is generated; an ABHA can be linked later.</Alert>
+          {error && <Alert severity="error" sx={{ whiteSpace: 'pre-line' }}>{error}</Alert>}
+          <Typography variant="overline" color="text.secondary" sx={{ mb: -1.5 }}>Personal details</Typography>
+          <TextField label="Full name" required {...field('full_name')} />
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+            <TextField select label="Gender" sx={{ flex: 1 }} {...field('gender')}>
+              {['female', 'male', 'other', 'unknown'].map((g) => <MenuItem key={g} value={g} sx={{ textTransform: 'capitalize' }}>{g}</MenuItem>)}
+            </TextField>
+            <TextField label="Birth date" type="date" required sx={{ flex: 1 }}
+              slotProps={{ inputLabel: { shrink: true }, htmlInput: { max: today(), min: '1900-01-01' } }} {...field('birth_date')} />
           </Stack>
-        </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={close} disabled={busy} color="inherit">Cancel</Button>
-          <Button type="submit" variant="contained" disabled={busy}>{busy ? 'Saving…' : 'Register'}</Button>
-        </DialogActions>
-      </form>
-    </Dialog>
+          <TextField label="Mobile (10 digits, optional)" slotProps={{ htmlInput: { inputMode: 'numeric', maxLength: 10 } }} {...field('phone')} />
+          <Typography variant="overline" color="text.secondary" sx={{ mb: -1.5 }}>Patient portal login</Typography>
+          <TextField label="Patient portal username" required autoComplete="off" {...field('username', 'Letters, numbers, . _ -')} />
+          <TextField label="Temporary password" required type="password" autoComplete="new-password"
+            {...field('password', 'At least 8 characters. Give it to the patient.')} />
+        </Stack>
+      </DialogContent>
+      <DialogActions sx={{ px: 3, pb: 2 }}>
+        <Button onClick={onClose} disabled={busy} color="inherit">Cancel</Button>
+        <Button type="submit" variant="contained" disabled={busy}>{busy ? 'Saving…' : 'Register'}</Button>
+      </DialogActions>
+    </form>
   )
 }
 

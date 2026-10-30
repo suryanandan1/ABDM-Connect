@@ -40,6 +40,10 @@ class Patient(Base):
     gender: Mapped[str] = mapped_column(String(10))
     birth_date: Mapped[date] = mapped_column(Date)
     phone: Mapped[str | None] = mapped_column(String(20))
+    # Set only after OTP verification through ABDM (currently the local mock server).
+    abha_number: Mapped[str | None] = mapped_column(String(17), unique=True, index=True)  # 91-XXXX-XXXX-XXXX
+    abha_address: Mapped[str | None] = mapped_column(String(100), unique=True, index=True)  # e.g. name@sbx
+    abha_verified_at: Mapped[datetime | None] = mapped_column(UTCDateTime)
     registered_by_facility_id: Mapped[int | None] = mapped_column(ForeignKey("facilities.id"))
     created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
 

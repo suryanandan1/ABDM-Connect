@@ -95,6 +95,7 @@ export default function PatientDetail() {
             ))}
           />
           {location.state?.created && <Alert severity="success" sx={{ mb: 2 }}>Patient registered with patient ID {location.state.created}.</Alert>}
+          {location.state?.linked && <Alert severity="success" sx={{ mb: 2 }}>Verified ABHA {location.state.linked} linked to this patient.</Alert>}
           {message && (
             <Alert severity="success" sx={{ mb: 2 }} onClose={() => setMessage('')}
               action={<Button color="inherit" size="small" component={RouterLink} to="/access-requests">View requests</Button>}>
@@ -106,6 +107,14 @@ export default function PatientDetail() {
               <Avatar sx={{ width: 56, height: 56, bgcolor: 'primary.light', color: 'primary.main', fontWeight: 700 }}>{initials(p.full_name)}</Avatar>
               <Box sx={{ ...infoGrid, flexGrow: 1 }}>
                 <InfoItem label="Patient ID"><Code>{p.patient_code}</Code></InfoItem>
+                <InfoItem label="ABHA">
+                  {p.abha_number ? (
+                    <>
+                      <Code>{p.abha_number}</Code>
+                      {p.abha_address && <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>{p.abha_address}</Typography>}
+                    </>
+                  ) : 'Not linked'}
+                </InfoItem>
                 <InfoItem label="Gender"><Box component="span" sx={{ textTransform: 'capitalize' }}>{p.gender}</Box></InfoItem>
                 <InfoItem label="Date of birth">{fmtDate(p.birth_date)}</InfoItem>
                 <InfoItem label="Mobile">{p.phone || 'Not provided'}</InfoItem>

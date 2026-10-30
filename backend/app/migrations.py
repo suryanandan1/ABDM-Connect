@@ -5,6 +5,9 @@ doctor consultation, so `report_id` becomes nullable and `consultation_id` is ad
 SQLite cannot change a column's NOT NULL, so each table is rebuilt with the documented
 procedure: create the new table, copy the rows, drop the old table, rename the new one.
 The database file is copied to `<name>.bak-hip-hiu` first.
+
+Upgrade 3 (ABHA): patients get abha_number, abha_address and abha_verified_at. These are new
+nullable columns, so a plain ALTER TABLE ADD COLUMN is enough; uniqueness comes from unique indexes.
 """
 import shutil
 from pathlib import Path
@@ -30,7 +33,8 @@ def upgrade(eng=engine):
     from .seed import SAMPLE_PASSWORD  # imported here: seed.py imports this module
 
     renamed = rename_identifiers(eng, SAMPLE_PASSWORD)
-    return upgrade_hip_hiu(eng) or renamed
+    abha = add_abha_columns(eng)
+    return upgrade_hip_hiu(eng) or renamed or abha
 
 
 def upgrade_hip_hiu(eng):
@@ -114,4 +118,23 @@ def rename_identifiers(eng, new_sample_password):
             if bcrypt.checkpw(LEGACY_SAMPLE_PASSWORD.encode(), pw_hash.encode()):
                 conn.execute(text("UPDATE users SET password_hash = :h, token_version = token_version + 1 WHERE id = :i"),
                              {"h": bcrypt.hashpw(new_sample_password.encode(), bcrypt.gensalt()).decode(), "i": uid})
+    return True
+
+
+ABHA_COLUMNS = {"abha_number": "VARCHAR(17)", "abha_address": "VARCHAR(100)", "abha_verified_at": "DATETIME"}
+
+
+def add_abha_columns(eng):
+    """Upgrade 3: ABHA identity columns on patients (same names and indexes as models.Patient creates)."""
+    with eng.connect() as conn:
+        if "patients" not in inspect(conn).get_table_names():
+            return False
+        missing = [c for c in ABHA_COLUMNS if c not in {col["name"] for col in inspect(conn).get_columns("patients")}]
+    if not missing:
+        return False
+    with eng.begin() as conn:
+        for column in missing:
+            conn.execute(text(f"ALTER TABLE patients ADD COLUMN {column} {ABHA_COLUMNS[column]}"))
+        for column in ("abha_number", "abha_address"):
+            conn.execute(text(f"CREATE UNIQUE INDEX IF NOT EXISTS ix_patients_{column} ON patients ({column})"))
     return True

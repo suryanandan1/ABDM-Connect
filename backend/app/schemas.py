@@ -92,6 +92,9 @@ class PatientOut(ORM):
     gender: str
     birth_date: date
     phone: str | None
+    abha_number: str | None
+    abha_address: str | None
+    abha_verified_at: datetime | None
     created_at: datetime
 
 
@@ -99,6 +102,55 @@ class PatientBrief(ORM):
     id: int
     patient_code: str
     full_name: str
+
+
+# ---------- ABHA verification (mock ABDM) ----------
+class AbhaInitIn(BaseModel):
+    abha_number: str | None = Field(default=None, pattern=r"^\s*\d{2}-?\d{4}-?\d{4}-?\d{4}\s*$")
+    abha_address: str | None = Field(default=None, pattern=r"^\s*[a-zA-Z0-9_.]{3,}@[a-z]+\s*$")
+
+    @model_validator(mode="after")
+    def exactly_one(self):
+        if bool(self.abha_number) == bool(self.abha_address):
+            raise ValueError("enter either an ABHA number or an ABHA address")
+        return self
+
+
+class AbhaInitOut(BaseModel):
+    txn_id: str
+    message: str
+
+
+class AbhaVerifyIn(BaseModel):
+    txn_id: str = Field(min_length=1, max_length=64)
+    otp: str = Field(pattern=r"^[0-9]{6}$")
+
+
+class AbhaProfile(BaseModel):
+    abha_number: str
+    abha_address: str | None
+    full_name: str
+    gender: str
+    birth_date: date
+    phone: str | None
+
+
+class AbhaVerifyOut(BaseModel):
+    # Signed copy of the verified profile; sent back to register/link so the profile cannot be edited.
+    abha_token: str
+    profile: AbhaProfile
+    existing_patient: PatientOut | None  # already registered with this ABHA
+    possible_match: PatientOut | None  # same name + birth date, no ABHA yet: link instead of creating
+
+
+class AbhaRegisterIn(BaseModel):
+    abha_token: str
+    username: str = Field(min_length=3, max_length=50, pattern=r"^[a-zA-Z0-9_.-]+$")
+    password: str = Field(min_length=8, max_length=72)
+
+
+class AbhaLinkIn(BaseModel):
+    abha_token: str
 
 
 # ---------- reports ----------
